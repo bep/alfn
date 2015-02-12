@@ -19,15 +19,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bep/alfn/lib"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"gopkg.in/fsnotify.v1"
-	"gopkg.in/tylerb/graceful.v1"
 	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
+
+	"github.com/bep/alfn/lib"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/tylerb/graceful.v1"
 )
 
 var appValue atomic.Value // wee ned to hot swap it
