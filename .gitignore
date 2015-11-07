@@ -3,6 +3,9 @@
 *.a
 *.so
 
+nohup.out
+lib/cover.out
+
 # Folders
 _obj
 _test
