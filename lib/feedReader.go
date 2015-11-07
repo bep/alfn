@@ -58,9 +58,14 @@ func (fr *FeedReader) run() {
 	}
 }
 
-// TODO(bep)
-func (fr *FeedReader) genFeed() (string, error) {
-	return fr.feedWriter(fr.items)
+func (fr *FeedReader) genFeed(newitems []*rss.Item) (string, error) {
+	fr.Lock()
+	fr.items = append(fr.items, toRSSItems(newitems)...)
+	fr.items = limit(fr.items, fr.cnf.Feed.MaxItems)
+	rss, err := fr.feedWriter(fr.items)
+	fr.Unlock()
+
+	return rss, err
 }
 
 func (fr *FeedReader) poll(uri string) {
@@ -91,11 +96,7 @@ func (fr *FeedReader) itemHandler(feed *rss.Feed, ch *rss.Channel, newitems []*r
 		return
 	}
 
-	fr.Lock()
-	fr.items = append(fr.items, toRSSItems(newitems)...)
-	fr.items = limit(fr.items, fr.cnf.Feed.MaxItems)
-	rss, err := fr.genFeed()
-	fr.Unlock()
+	rss, err := fr.genFeed(newitems)
 
 	if err != nil {
 		fmt.Println("error: Failed to create feed:", err)
