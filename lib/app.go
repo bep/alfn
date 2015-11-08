@@ -74,5 +74,5 @@ func (a *App) Run() *App {
 }
 
 func (a App) feedItemsFilter(items []*rss.Item) []*rss.Item {
-	return appyFilters(items, a.includeMatchers)
+	return applyFilters(items, a.includeMatchers)
 }

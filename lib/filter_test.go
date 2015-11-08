@@ -38,7 +38,7 @@ func TestAppyFilters(t *testing.T) {
 		regexpMatcher{Regexp: regexp.MustCompile("IJ KL")},
 	}
 
-	filtered1 := appyFilters(unFiltered, matchers1)
+	filtered1 := applyFilters(unFiltered, matchers1)
 
 	if len(filtered1) != 3 {
 		t.Error("Got", len(filtered1))
@@ -51,7 +51,7 @@ func TestAppyFilters(t *testing.T) {
 		regexpMatcher{negate: false, matchBreaker: true, Regexp: regexp.MustCompile("MUSTCONTAIN")},
 	}
 
-	filtered2 := appyFilters(unFiltered, matchers2)
+	filtered2 := applyFilters(unFiltered, matchers2)
 
 	if len(filtered2) != 2 {
 		t.Error("Got", len(filtered2))

@@ -27,7 +27,7 @@ type matcher interface {
 	Negate() bool
 }
 
-func appyFilters(items []*rss.Item, matchers []matcher) []*rss.Item {
+func applyFilters(items []*rss.Item, matchers []matcher) []*rss.Item {
 	var filtered []*rss.Item
 
 OUTER:
