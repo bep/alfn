@@ -102,7 +102,7 @@ func startup() error {
 		fmt.Fprintf(w, app.GetFeed())
 	})
 
-	fmt.Printf("\nStarting server on %s ...\n\n", serverAndPort)
+	fmt.Printf("\nStarting server on http://%s ...\n\n", serverAndPort)
 
 	graceful.Run(serverAndPort, 10*time.Second, mux)
 

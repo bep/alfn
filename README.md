@@ -1,6 +1,6 @@
 # alfn
 
-**alfn** (Aggregated Latest Filtered News) is a great little tool to creat your own RSS feed about only the stuff you´re really interested in!
+**alfn** (Aggregated Latest Filtered News) is a great little tool to create your own RSS feed about only the stuff you´re really interested in! Just configure it with the feeds to watch and what to watch for, and just sit back and wait for the updates.
 
 ## Install
 
@@ -42,7 +42,8 @@ pattern="Beatles"
 matchBreaker=true
 negate=true
 
-# The matcher(s) below decide what to include. Any article matching any of the regular expressions will be added to the feed.
+# The matcher(s) below decide what to include. Any article matching any of the 
+# regular expressions will be added to the feed.
 # Add more matchers sections as needed.
 [[matchers]]
 pattern="Liverpool|J(u|ü)rgen (Norbert)? Klopp"
@@ -62,6 +63,20 @@ name="Your Name"
 email="yourname@yourname.com"
 ```
 
+Then start your server pointing to the config file above:
+
+```bash
+alfn --config=/path/to/config/liverpool-feed.toml
+
+Using config file: /path/to/config/liverpool-feed.toml
+
+Starting server on http://127.0.0.1:1926 ...
+
+2 filtered item(s) in http://feeds.bbci.co.uk/sport/0/football/premier-league/rss.xml
+1 filtered item(s) in http://www.theguardian.com/football/premierleague/rss
+17 filtered item(s) in http://www.telegraph.co.uk/sport/football/teams/liverpool/rss
+
+```
 
 ## Credits
 
