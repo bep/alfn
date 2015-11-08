@@ -48,7 +48,10 @@ func (fr *FeedReader) GetFeed() string {
 
 func newFeedReader(cnf Config, ff feedFilter, fw feedWriter) *FeedReader {
 	r := &FeedReader{cnf: cnf, itemFilter: ff, feedWriter: fw}
-	r.feed.f.Store("")
+	// start out with an empty feed
+	rss, _ := r.genFeed([]*rss.Item{})
+	r.feed.f.Store(rss)
+
 	return r
 }
 
