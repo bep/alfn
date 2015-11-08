@@ -54,7 +54,7 @@ func init() {
       <pubDate>{{ .ParsedPubDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | shtml }}</pubDate>
       <author>{{ .AuthorFormatted }}</author>
       <guid>{{ .Key }}</guid>
-      <description>{{ with .Content }}{{ .Text | shtml }}{{ else }}{{ .Description | shtml }}{{ end }}</description>
+      <description>{{ "<![CDATA[" | shtml  }}{{ with .Content }}{{ .Text | shtml }}{{ else }}{{ .Description | shtml }}{{ end }}{{ "]]>" | shtml }}</description>
     </item>
     {{ end }}
   </channel>
