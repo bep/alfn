@@ -21,7 +21,7 @@ import (
 	"regexp"
 )
 
-type Include struct {
+type Matcher struct {
 	Pattern      string
 	MatchBreaker bool
 	Negate       bool
@@ -29,7 +29,7 @@ type Include struct {
 
 type Config struct {
 	Feeds    []string
-	Includes []Include
+	Matchers []Matcher
 	Feed
 }
 
@@ -56,11 +56,11 @@ func (rm regexpMatcher) Negate() bool {
 func NewApp(config Config) *App {
 	app := &App{cnf: config}
 
-	for _, includeRe := range app.cnf.Includes {
+	for _, matchRe := range app.cnf.Matchers {
 		// make all the Regexps case insensitive
 		app.includeMatchers =
-			append(app.includeMatchers, regexpMatcher{matchBreaker: includeRe.MatchBreaker, negate: includeRe.Negate,
-				Regexp: regexp.MustCompile("(?i)" + includeRe.Pattern)})
+			append(app.includeMatchers, regexpMatcher{matchBreaker: matchRe.MatchBreaker, negate: matchRe.Negate,
+				Regexp: regexp.MustCompile("(?i)" + matchRe.Pattern)})
 	}
 
 	app.FeedReader = newFeedReader(app.cnf, app.feedItemsFilter, feedFactory(app.cnf.Feed))
