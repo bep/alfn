@@ -36,7 +36,7 @@ OUTER:
 			if !m.MatchBreaker() {
 				continue
 			}
-			content := textContent(item)
+			content := contentToSearch(item)
 			match := m.MatchString(content)
 			if match == m.Negate() {
 				continue OUTER
@@ -48,7 +48,7 @@ OUTER:
 			if m.MatchBreaker() {
 				continue
 			}
-			content := textContent(item)
+			content := contentToSearch(item)
 			match := m.MatchString(content)
 			if match != m.Negate() {
 				filtered = append(filtered, item)
@@ -59,8 +59,11 @@ OUTER:
 	return filtered
 }
 
-func textContent(item *rss.Item) string {
+func contentToSearch(item *rss.Item) string {
 	var content string
+	if len(item.Links) > 0 {
+		content += item.Links[0].Href + " "
+	}
 	if item.Title != "" {
 		content += item.Title + " "
 	}
@@ -71,6 +74,7 @@ func textContent(item *rss.Item) string {
 	if item.Content != nil {
 		content += item.Content.Text
 	}
+
 	return content
 }
 
