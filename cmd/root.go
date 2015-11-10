@@ -22,16 +22,21 @@ import (
 	"github.com/bep/alfn/lib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/fsnotify.v1"
 	"gopkg.in/tylerb/graceful.v1"
 	"log"
 	"net/http"
+	"sync/atomic"
 	"time"
 )
 
-var cfgFile string
-var app *lib.App
+var appValue atomic.Value // wee ned to hot swap it
+var app = func() *lib.App {
+	return appValue.Load().(*lib.App)
+}
 
 // flags
+var cfgFile string
 var serverPort int
 var serverInterface string
 
@@ -94,18 +99,42 @@ func startup() error {
 		config.Feed.MaxItems = 10
 	}
 
-	app := lib.NewApp(config).Run()
+	// enable live reloading of config
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config", e.Name, "changed ...")
+		if err := viper.Unmarshal(&config); err != nil {
+			fmt.Println("error: Failed to reload config: ", err)
+			return
+		}
+		shutdownIfNeededAndStart(config)
+	})
+
+	viper.WatchConfig()
+
+	shutdownIfNeededAndStart(config)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
-		fmt.Fprintf(w, app.GetFeed())
+		fmt.Fprintf(w, app().GetFeed())
 	})
 
 	fmt.Printf("\nStarting server on http://%s ...\n\n", serverAndPort)
 
 	graceful.Run(serverAndPort, 10*time.Second, mux)
 
+	app().Shutdown()
+
 	fmt.Println("\nStopped ...")
 	return nil
+}
+
+func shutdownIfNeededAndStart(cfg lib.Config) {
+	if a, ok := appValue.Load().(*lib.App); ok {
+		// close it down and create a new one
+		a.Shutdown()
+	}
+
+	appValue.Store(lib.NewApp(cfg).Run())
+
 }

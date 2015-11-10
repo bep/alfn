@@ -55,9 +55,11 @@ func newFeedReader(cnf Config, ff feedFilter, fw feedWriter) *FeedReader {
 	return r
 }
 
-func (fr *FeedReader) run() {
+func (fr *FeedReader) run(shutdown <-chan int, wg *sync.WaitGroup) {
+
 	for _, feed := range fr.cnf.Feeds {
-		go fr.poll(feed)
+		wg.Add(1)
+		go fr.poll(feed, shutdown, wg)
 	}
 }
 
@@ -71,7 +73,8 @@ func (fr *FeedReader) genFeed(newitems []*rss.Item) (string, error) {
 	return rss, err
 }
 
-func (fr *FeedReader) poll(uri string) {
+func (fr *FeedReader) poll(uri string, shutdown <-chan int, wg *sync.WaitGroup) {
+	defer wg.Done()
 	// TODO(bep) options, maybe
 	feed := rss.New(240, true, chanHandler, fr.itemHandler)
 
@@ -81,7 +84,12 @@ func (fr *FeedReader) poll(uri string) {
 			return
 		}
 
-		<-time.After(time.Duration(feed.SecondsTillUpdate() * 1e9))
+		select {
+		case <-time.After(time.Duration(feed.SecondsTillUpdate() * 1e9)):
+		case <-shutdown:
+			return
+		}
+
 	}
 
 }

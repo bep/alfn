@@ -19,6 +19,7 @@ package lib
 import (
 	rss "github.com/jteeuwen/go-pkg-rss"
 	"regexp"
+	"sync"
 )
 
 type Matcher struct {
@@ -36,6 +37,8 @@ type Config struct {
 type App struct {
 	cnf             Config
 	includeMatchers []matcher
+	shutdown        chan int
+	wg              *sync.WaitGroup
 	*FeedReader
 }
 
@@ -54,7 +57,9 @@ func (rm regexpMatcher) Negate() bool {
 }
 
 func NewApp(config Config) *App {
-	app := &App{cnf: config}
+	wg := &sync.WaitGroup{}
+	shutdown := make(chan int)
+	app := &App{cnf: config, shutdown: shutdown, wg: wg}
 
 	for _, matchRe := range app.cnf.Matchers {
 		// make all the Regexps case insensitive
@@ -69,8 +74,13 @@ func NewApp(config Config) *App {
 }
 
 func (a *App) Run() *App {
-	a.FeedReader.run()
+	a.FeedReader.run(a.shutdown, a.wg)
 	return a
+}
+
+func (a *App) Shutdown() {
+	close(a.shutdown)
+	a.wg.Wait()
 }
 
 func (a App) feedItemsFilter(items []*rss.Item) []*rss.Item {
