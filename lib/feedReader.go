@@ -19,6 +19,8 @@ package lib
 import (
 	"fmt"
 	rss "github.com/jteeuwen/go-pkg-rss"
+	"github.com/rogpeppe/go-charset/charset"
+	_ "github.com/rogpeppe/go-charset/data"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -79,7 +81,7 @@ func (fr *FeedReader) poll(uri string, shutdown <-chan int, wg *sync.WaitGroup) 
 	feed := rss.New(240, true, chanHandler, fr.itemHandler)
 
 	for {
-		if err := feed.Fetch(uri, nil); err != nil {
+		if err := feed.Fetch(uri, charset.NewReader); err != nil {
 			fmt.Fprintf(os.Stderr, "[e] %s: %s\n", uri, err)
 			return
 		}
