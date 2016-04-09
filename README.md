@@ -1,5 +1,7 @@
 # alfn 
 
+[![GoDoc](https://godoc.org/github.com/bep/alfn?status.svg)](https://godoc.org/github.com/bep/alfn)
+
 **alfn** (Aggregated Latest Filtered News) is a great little tool to create your own RSS feed about only the stuff you´re really interested in! Just configure it with the feeds to watch and what to watch for, and just sit back and wait for the updates. Oh, and it supports hotreloading configuration changes!
 
 [![Build Status](https://travis-ci.org/bep/alfn.svg)](https://travis-ci.org/bep/alfn)
